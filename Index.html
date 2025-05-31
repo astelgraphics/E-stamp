@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Stamp Document Generator</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background-color: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+            box-sizing: border-box;
+        }
+        h1 {
+            text-align: center;
+            color: #1e293b;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            font-family: Segoe UI;
+        }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+        }
+        .editing-area {
+            background-color: #ffffff;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+            width: 297mm;
+            height: 210mm;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+        .editing-area h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0 0 1rem;
+            border-bottom: 2px solid #10b981;
+            padding-bottom: 0.5rem;
+            font-family: Segoe UI;
+        }
+        .form-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        label {
+            width: 120px;
+            font-weight: 500;
+            color: #475569;
+            font-size: 0.9rem;
+            font-family: Segoe UI;
+            flex-shrink: 0;
+        }
+        input, select {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            font-family: Segoe UI;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background-color: #f8fafc;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        button {
+            padding: 10px;
+            background-color: #10b981;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        button:hover {
+            background-color: #059669;
+            transform: translateY(-1px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        @media (max-width: 1024px) {
+            body {
+                padding: 20px;
+            }
+            .editing-area {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 297 / 210;
+            }
+            .form-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            label {
+                width: auto;
+                margin-bottom: 4px;
+            }
+            input, select {
+                width: 100%;
+            }
+        }
+        @media print {
+            .editing-area {
+                width: 297mm;
+                height: 210mm;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1>E-Stamp Document Generator</h1>
+    <div class="container">
+        <div class="editing-area">
+            <h2>E-STAMP DETAILS</h2>
+            <div class="form-container">
+                <form id="estamp-form">
+                    <div class="form-group">
+                        <label for="stampId">Stamp ID:</label>
+                        <input type="text" id="stampId" name="stampId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="type">Type:</label>
+                        <select id="type" name="type" required>
+                            <option value="Affidavit">Affidavit</option>
+                            <option value="Agreement">Agreement</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Amount (Rs):</label>
+                        <select id="amount" name="amount" required>
+                            <option value="100">100</option>
+                            <option value="300">300</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="applicantName">Applicant Name:</label>
+                        <input type="text" id="applicantName" name="applicantName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cnic">CNIC:</label>
+                        <input type="text" id="cnic" name="cnic" pattern="\d{5}-\d{7}-\d{1}" placeholder="XXXXX-XXXXXXX-X" maxlength="15" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fatherRelation">Relation:</label>
+                        <select id="fatherRelation" name="fatherRelation" required>
+                            <option value="S/O">S/O</option>
+                            <option value="D/O">D/O</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="fatherName">Father Name:</label>
+                        <input type="text" id="fatherName" name="fatherName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="agent">Agent:</label>
+                        <select id="agent" name="agent" required>
+                            <option value="Self">Self</option>
+                            <option value="Father">Father</option>
+                            <option value="Mother">Mother</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address:</label>
+                        <input type="text" id="address" name="address" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="issueDate">Issue Date:</label>
+                        <input type="date" id="issueDate" name="issueDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="time">Time:</label>
+                        <input type="time" id="time" name="time" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expiryDate">Expiry Date:</label>
+                        <input type="date" id="expiryDate" name="expiryDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="amountInWords">Amount in Words:</label>
+                        <input type="text" id="amountInWords" name="amountInWords" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reason">Reason:</label>
+                        <select id="reason" name="reason" required>
+                            <option value="Affidavit">Affidavit</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="vendorDetails">Vendor Details:</label>
+                        <select id="vendorDetails" name="vendorDetails" required>
+                            <option value="Sibtain Rahim | PB-RYK-6-4-2917 | Katcheri Liaquatpur">Sibtain Rahim | PB-RYK-6-4-2917 | Katcheri Liaquatpur</option>
+                        </select>
+                    </div>
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to generate random Stamp ID in format PB-RYK-****************
+        function generateRandomStampId() {
+            const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const numbers = '0123456789';
+            const getRandomChar = (chars) => chars[Math.floor(Math.random() * chars.length)];
+            
+            let id = 'PB-RYK-';
+            const alphanumeric = letters + numbers;
+            for (let i = 0; i < 16; i++) {
+                id += getRandomChar(alphanumeric);
+            }
+            return id;
+        }
+
+        // Function to format date to DD-MMM-YYYY
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = date.toLocaleString('en-US', { month: 'short' }).toLowerCase();
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
+        }
+
+        // Function to format time with AM/PM
+        function formatTime(timeStr) {
+            const [hours, minutes] = timeStr.split(':');
+            const hoursNum = parseInt(hours);
+            const ampm = hoursNum >= 12 ? 'PM' : 'AM';
+            const formattedHours = hoursNum % 12 || 12;
+            return `${formattedHours}:${minutes} ${ampm}`;
+        }
+
+        // Function to format CNIC input
+        function formatCNIC(input) {
+            let value = input.value.replace(/[^0-9]/g, ''); // Remove non-digits
+            if (value.length > 5) {
+                value = value.slice(0, 5) + '-' + value.slice(5);
+            }
+            if (value.length > 13) {
+                value = value.slice(0, 13) + '-' + value.slice(13);
+            }
+            input.value = value.slice(0, 15); // Limit to XXXXX-XXXXXXX-X
+        }
+
+        // Set random Stamp ID on page load
+        document.getElementById('stampId').value = generateRandomStampId();
+
+        // Add event listener for CNIC input
+        document.getElementById('cnic').addEventListener('input', function(e) {
+            formatCNIC(e.target);
+        });
+
+        // Function to collect form data
+        function collectFormData() {
+            return {
+                stampId: document.getElementById('stampId').value,
+                type: document.getElementById('type').value,
+                amount: document.getElementById('amount').value,
+                applicantName: document.getElementById('applicantName').value,
+                cnic: document.getElementById('cnic').value,
+                fatherRelation: document.getElementById('fatherRelation').value,
+                fatherName: document.getElementById('fatherName').value,
+                agent: document.getElementById('agent').value,
+                address: document.getElementById('address').value,
+                issueDate: formatDate(document.getElementById('issueDate').value),
+                time: formatTime(document.getElementById('time').value),
+                expiryDate: formatDate(document.getElementById('expiryDate').value),
+                amountInWords: document.getElementById('amountInWords').value,
+                reason: document.getElementById('reason').value,
+                vendorDetails: document.getElementById('vendorDetails').value
+            };
+        }
+
+        // Function to validate form data
+        function validateFormData(formData) {
+            return Object.values(formData).every(value => value.trim() !== '');
+        }
+
+        // Original HTML template for preview
+        const originalHtml = `<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>E-Stamp Document</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+        body {
+            width: 210mm;
+            height: 297mm;
+            margin: 0;
+            padding: 20mm;
+            box-sizing: border-box;
+            line-height: 108%;
+            font-family: Calibri, sans-serif;
+            font-size: 11pt;
+            color: #000000;
+        }
+        h1, h2, h3, h4, h5, h6, p {
+            margin: 0pt 0pt 8pt;
+            color: #000000;
+        }
+        h1 {
+            margin-top: 24pt;
+            margin-bottom: 6pt;
+            page-break-before: auto;
+            page-break-inside: avoid;
+            page-break-after: avoid;
+            line-height: 108%;
+            font-family: Calibri, sans-serif;
+            font-size: 24pt;
+            font-weight: bold;
+        }
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            font-family: Calibri, sans-serif;
+            font-size: 11pt;
+        }
+        .header-section p {
+            color: #000000;
+        }
+        .title {
+            text-align: center;
+            line-height: normal;
+            font-size: 18pt;
+            font-family: Verdana;
+            font-weight: bold;
+            text-decoration: underline;
+            color: #000000;
+        }
+        .barcode-qr-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .barcode {
+            width: 219px;
+            height: 30px;
+        }
+        .qr-section {
+            text-align: center;
+            display: inline-block;
+            float: right;
+            margin-right: 0;
+            position: relative;
+            right: 20px;
+        }
+        .qr-code {
+            width: 99px;
+            height: 98px;
+        }
+        .qr-text {
+            font-family: Calibri, sans-serif;
+            font-size: 12pt;
+            line-height: 108%;
+            color: #000000;
+        }
+        .details-section {
+            font-family: Calibri, sans-serif;
+            font-size: 12pt;
+            line-height: 100%;
+        }
+        .details-section p {
+            color: #000000;
+        }
+        .details-section span.label {
+            display: inline-block;
+            width: 150px;
+            color: #000000;
+        }
+        .details-section span.value {
+            font-weight: bold;
+            color: #000000;
+        }
+        .footer-container {
+            position: relative;
+            width: 100%;
+            max-width: 690px;
+            height: 69px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .footer-border {
+            width: 100%;
+            max-width: 690px;
+            height: 69px;
+            display: block;
+        }
+        .footer-text {
+            font-family: Calibri, sans-serif;
+            font-size: 10pt;
+            line-height: 1.1;
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            color: #000000;
+            text-align: right;
+            width: 100%;
+            max-width: 650px;
+            direction: rtl;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+        .footer-text .urdu-text {
+            font-weight: bold;
+        }
+        .footer-text .english-text {
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="header-section">
+            <p>05:19 PM, May 31, 2025</p>
+            <p>Government of Punjab-e-stamping vendor portal</p>
+        </div><br>
+        <p class="title">E-STAMP</p>
+        <div class="barcode-qr-section">
+            <div>
+                <img src="https://res.cloudinary.com/dwplfigyp/image/upload/v1748693041/image003_wkvfut.jpg" class="barcode" alt="Barcode">
+            </div>
+            <div class="qr-section">
+                <img src="https://res.cloudinary.com/dwplfigyp/image/upload/v1748693041/image002_k73osy.png" class="qr-code" alt="QR Code"><br>
+                <span class="qr-text">Scan for online Verification</span>
+            </div>
+        </div>
+        <div class="details-section">
+            <p><span class="label">ID:</span> <span class="value">{Stamp ID}</span></p>
+            <p><span class="label">Type:</span> <span class="value">{Select Type}</span></p>
+            <p><span class="label">Amount:</span> <span class="value">Rs {Select Value} /-</span></p>
+            <p><span class="label">Description:</span> AFFIDAVIT-4 </p>
+            <p><span class="label">Applicant:</span> {Name} [{CNIC}]</p>
+            <p><span class="label">{Father Relation}:</span> {Father Name} </p>
+            <p><span class="label">Agent:</span> {Select Agent}</p>
+            <p><span class="label">Address:</span> {Present Adress}</p>
+            <p><span class="label">Issue Date:</span> {Issue Date} {Time}</p>
+            <p><span class="label">Delisted On/Validity:</span> {Expiry Date}</p>
+            <p><span class="label">Amount in Words:</span> {Total Amount}</p>
+            <p><span class="label">Reason:</span> {Reason} </p>
+            <p><span class="label">Vendor Information:</span> {Vendor Details}</p>
+        </div>
+        <div class="footer-container">
+            <img src="https://myfiles.space/user_files/temporary/683a9d91326c05.52191450/1748671888_affidavit/1748671888_affidavit-4.png" class="footer-border" alt="Decorative Border">
+            <p class="footer-text">
+                <span class="urdu-text">نوٹ: یہ ٹرانزیکشن تاریخ اجرا سے سات دنوں تک کے لیے قابل استعمال ہے ای-سٹامپ کی تصدیق بذریعہ ویب سائٹ کیو آر کوڈ یا ایس ایم ایس سے کی جا سکتی ہے۔</span><br>
+                <span class="english-text">TYPE "eSTAMP <16-digit eStamp Number>" SEND TO 8100</span>
+            </p>
+        </div>
+    </div>
+</body>
+</html>`;
+
+        // Handle form submission
+        document.getElementById('estamp-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = collectFormData();
+            if (!validateFormData(formData)) {
+                alert('Please fill out all required fields.');
+                return;
+            }
+
+            // Create preview HTML
+            let previewHtml = originalHtml;
+            previewHtml = previewHtml
+                .replace('{Stamp ID}', formData.stampId)
+                .replace('{Select Type}', formData.type)
+                .replace('{Select Value}', formData.amount)
+                .replace('{Name}', formData.applicantName)
+                .replace('{CNIC}', formData.cnic)
+                .replace('{Father Relation}', formData.fatherRelation)
+                .replace('{Father Name}', formData.fatherName)
+                .replace('{Select Agent}', formData.agent)
+                .replace('{Present Adress}', formData.address)
+                .replace('{Issue Date}', formData.issueDate)
+                .replace('{Time}', formData.time)
+                .replace('{Expiry Date}', formData.expiryDate)
+                .replace('{Total Amount}', formData.amountInWords)
+                .replace('{Reason}', formData.reason)
+                .replace('{Vendor Details}', formData.vendorDetails);
+
+            // Store form data and preview HTML in sessionStorage
+            sessionStorage.setItem('formData', JSON.stringify(formData));
+            sessionStorage.setItem('previewHtml', previewHtml);
+
+            // Redirect to preview.html
+            window.location.href = 'preview.html';
+        });
+    </script>
+</body>
+</html>

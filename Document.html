@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>E-Stamp Document</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+
+        body {
+            width: 210mm;
+            height: 297mm;
+            margin: 0;
+            padding: 20mm;
+            box-sizing: border-box;
+            line-height: 108%;
+            font-family: Calibri, sans-serif;
+            font-size: 11pt;
+        }
+
+        h1, h2, h3, h4, h5, h6, p {
+            margin: 0pt 0pt 8pt;
+        }
+
+        h1 {
+            margin-top: 24pt;
+            margin-bottom: 6pt;
+            page-break-before: auto;
+            page-break-inside: avoid;
+            page-break-after: avoid;
+            line-height: 108%;
+            font-family: Calibri, sans-serif;
+            font-size: 24pt;
+            font-weight: bold;
+            color: #000000;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            font-family: Calibri, sans-serif;
+            font-size: 11pt;
+            margin-right: 43.2pt;
+        }
+
+        .title {
+            text-align: center;
+            line-height: normal;
+            font-size: 18pt;
+            font-family: Verdana;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        .barcode-qr-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .barcode {
+            width: 219px;
+            height: 30px;
+        }
+
+        .qr-section {
+            text-align: center;
+            display: inline-block;
+            float: right;
+            margin-right: 0;
+            position: relative;
+            right: 20px;
+        }
+
+        .qr-code {
+            width: 99px;
+            height: 98px;
+        }
+
+        .qr-text {
+            font-family: Calibri, sans-serif;
+            font-size: 12pt;
+            line-height: 108%;
+        }
+
+        .details-section {
+            font-family: Calibri, sans-serif;
+            font-size: 12pt;
+            line-height: 100%;
+        }
+
+        .details-section span.label {
+            display: inline-block;
+            width: 150px;
+        }
+
+        .details-section span.value {
+            font-weight: bold;
+        }
+
+        .footer-container {
+            position: relative;
+            width: 100%;
+            max-width: 690px;
+            height: 69px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .footer-border {
+            width: 100%;
+            max-width: 690px;
+            height: 69px;
+            display: block;
+        }
+
+        .footer-text {
+            font-family: Calibri, sans-serif;
+            font-size: 10pt;
+            line-height: 1.1;
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            color: #000000;
+            text-align: right;
+            width: 100%;
+            max-width: 650px;
+            direction: rtl;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+
+        .footer-text .urdu-text {
+            font-weight: bold;
+        }
+
+        .footer-text .english-text {
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="header-section">
+            <p>12:50 PM, May 31, 2025</p>
+            <p>Government of Punjab-e-stamping vendor portal</p>
+        </div><br>
+        <p class="title">E-STAMP</p>
+        <div class="barcode-qr-section">
+            <div>
+                <img src="https://myfiles.space/user_files/temporary/683a9d91326c05.52191450/1748671888_affidavit/1748671888_affidavit-2.jpeg" class="barcode" alt="Barcode">
+            </div>
+            <div class="qr-section">
+                <img src="https://myfiles.space/user_files/temporary/683a9d91326c05.52191450/1748671888_affidavit/1748671888_affidavit-3.png" class="qr-code" alt="QR Code"><br>
+                <span class="qr-text">Scan for online Verification</span>
+            </div>
+        </div>
+        <div class="details-section">
+            <p><span class="label">ID:</span> <span class="value">{Stamp ID}</span></p>
+            <p><span class="label">Type:</span> <span class="value">{Select Type}</span></p>
+            <p><span class="label">Amount:</span> <span class="value">Rs {Select Value} /-</span></p>
+            <p><span class="label">Description:</span> AFFIDAVIT-4 </p>
+            <p><span class="label">Applicant:</span> {Name} [{CNIC}]</p>
+            <p><span class="label">S/O:</span> {Father Name} </p>
+            <p><span class="label">Agent:</span> {Select Agent}</p>
+            <p><span class="label">Address:</span> {Present Adress}</p>
+            <p><span class="label">Issue Date:</span> {Issue Date} {Time}</p>
+            <p><span class="label">Delisted On/Validity:</span> {Expiry Date}</p>
+            <p><span class="label">Amount in Words:</span> {Total Amount}</p>
+            <p><span class="label">Reason:</span> {Reason} </p>
+            <p><span class="label">Vendor Information:</span> {Vendor Details}</p>
+        </div>
+        <div class="footer-container">
+            <img src="https://myfiles.space/user_files/temporary/683a9d91326c05.52191450/1748671888_affidavit/1748671888_affidavit-4.png" class="footer-border" alt="Decorative Border">
+            <p class="footer-text">
+                <span class="urdu-text">نوٹ: یہ ٹرانزیکشن تاریخ اجرا سے سات دنوں تک کے لیے قابل استعمال ہے ای-سٹامپ کی تصدیق بذریعہ ویب سائٹ کیو آر کوڈ یا ایس ایم ایس سے کی جا سکتی ہے۔</span><br>
+                <span class="english-text">TYPE "eSTAMP <16-digit eStamp Number>" SEND TO 8100</span>
+            </p>
+        </div>
+    </div>
+    <p style="bottom: 10px; right: 10px; position: absolute;">
+        <a href="https://wordtohtml.net" target="_blank" style="font-size:11px; color: #d0d0d0;">Converted to HTML with WordToHTML.net</a>
+    </p>
+</body>
+</html>

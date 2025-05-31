@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Stamp Preview</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background-color: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+            box-sizing: border-box;
+        }
+        h1 {
+            text-align: center;
+            color: #1e293b;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        .preview-container {
+            width: 210mm; /* A4 portrait width */
+            height: 297mm; /* A4 portrait height */
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .preview-content {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .preview-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+        .download-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px auto;
+        }
+        .download-btn {
+            padding: 10px;
+            background-color: #3b82f6;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 200px;
+            text-align: center;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .download-btn:hover {
+            background-color: #2563eb;
+            transform: translateY(-1px);
+        }
+        .download-btn:active {
+            transform: translateY(0);
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+            .preview-container {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 210 / 297;
+            }
+            .download-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        @media print {
+            .preview-container {
+                width: 210mm;
+                height: 297mm;
+                box-shadow: none;
+            }
+            .download-buttons, h1 {
+                display: none;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://unpkg.com/docx@7.8.2/build/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body>
+    <h1>E-Stamp Preview</h1>
+    <div class="preview-container">
+        <div class="preview-content">
+            <iframe id="preview-iframe"></iframe>
+        </div>
+    </div>
+    <div class="download-buttons">
+        <button class="download-btn" onclick="printPreview()">Print</button>
+    </div>
+
+    <script>
+        // Load preview HTML from sessionStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            const previewHtml = sessionStorage.getItem('previewHtml');
+            const iframe = document.getElementById('preview-iframe');
+            if (previewHtml) {
+                iframe.contentDocument.open();
+                iframe.contentDocument.write(previewHtml);
+                iframe.contentDocument.close();
+            } else {
+                iframe.contentDocument.open();
+                iframe.contentDocument.write('<html><body><p>No preview available. Please generate the E-Stamp from the form.</p></body></html>');
+                iframe.contentDocument.close();
+            }
+        });
+
+        // Print preview
+        function printPreview() {
+            const iframe = document.getElementById('preview-iframe');
+            iframe.contentWindow.print();
+        }
+
+        // Function to generate DOCX
+        function generateDocx(formData) {
+            const { Document, Packer, Paragraph, TextRun, AlignmentType } = docx;
+
+            const doc = new Document({
+                sections: [{
+                    properties: {
+                        page: {
+                            margin: {
+                                top: 1134, // ~20mm
+                                right: 1134,
+                                bottom: 1134,
+                                left: 1134
+                            },
+                            size: {
+                                width: 11906, // 210mm
+                                height: 16838 // 297mm
+                            }
+                        }
+                    },
+                    children: [
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "04:47 PM, May 31, 2025",
+                                    font: "Calibri",
+                                    size: 22,
+                                    color: "000000"
+                                }),
+                                new TextRun({
+                                    text: "\tGovernment of Punjab-e-stamping vendor portal",
+                                    font: "Calibri",
+                                    size: 22,
+                                    color: "000000"
+                                })
+                            ],
+                            alignment: AlignmentType.JUSTIFIED
+                        }),
+                        new Paragraph({ text: "", spacing: { after: 200 } }),
+                        new Paragraph({
+                            text: "E-STAMP",
+                            alignment: AlignmentType.CENTER,
+                            style: "TitleStyle"
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "[Barcode Image]",
+                                    font: "Calibri",
+                                    size: 22,
+                                    color: "000000"
+                                }),
+                                new TextRun({
+                                    text: "\t[QR Code Image] Scan for online Verification",
+                                    font: "Calibri",
+                                    size: 24,
+                                    color: "000000"
+                                })
+                            ],
+                            alignment: AlignmentType.JUSTIFIED
+                        }),
+                        new Paragraph({ text: "", spacing: { after: 200 } }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({ text: "ID: ", font: "Calibri", size: 24, color: "000000" }),
+                                new TextRun({ text: formData.stampId, font: "Calibri", size: 24, bold: true, color: "000000" })
+                            ]
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({ text: "Type: ", font: "Calibri", size: 24, color: "000000" }),
+                                new TextRun({ text: formData.type, font: "Calibri", size: 24, bold: true, color: "000000" })
+                            ]
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({ text: "Amount: ", font: "Calibri", size: 24, color: "000000" }),
+                                new TextRun({ text: `Rs ${formData.amount} /-`, font: "Calibri", size: 24, bold: true, color: "000000" })
+                            ]
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({ text: "Description: ", font: "Calibri", size: 24, color: "000000" }),
+                                new TextRun({ text: "AFFIDAVIT-4", font: "Calibri", size: 24, color: "000000" })
+                            ]
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({ text: "Applicant: ", font: "Calibri", size: 24, color: "000000" }),
+                                new TextRun({ text: `${formData.applicantName} [${formData.cnic}]`, font: "Calibri", size: 24, color: "000000" })
+                            ]
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({ text: "S/O: ", font: "Calibri", size: 24, color: "000000" }),
+                                new TextRun({ text: formData.fatherName, font: "Calibri", size: 24, color: "000000" })
+                            ]
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({ text: "Agent: ", font: "Calibri", size: 24, color: "000000" }),
+                                new TextRun({ text: formData.agent, font: "Calibri", size: 24, bold: true, color: "000000" })
+                            ]
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({ text: "Address: ", font: "Calibri", size: 24, color: "000000" }),
+                                new TextRun({ text: formData.address, font: "Calibri", size: 24, color: "000000" })
+                            ]
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({ text: "Issue Date: ", font: "Calibri", size: 24, color: "000000" }),
+                                new TextRun({ text: `${formData.issueDate} ${formData.time}`, font: "Calibri", size: 24, color: "000000" })
+                            ]
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({ text: "Delisted On/Validity: ", font: "Calibri", size: 24, color: "000000" }),
+                                new TextRun({ text: formData.expiryDate, font: "Calibri", size: 24, color: "000000" })
+                            ]
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({ text: "Amount in Words: ", font: "Calibri", size: 24, color: "000000" }),
+                                new TextRun({ text: formData.amountInWords, font: "Calibri", size: 24, color: "000000" })
+                            ]
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({ text: "Reason: ", font: "Calibri", size: 24, color: "000000" }),
+                                new TextRun({ text: formData.reason, font: "Calibri", size: 24, color: "000000" })
+                            ]
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({ text: "Vendor Information: ", font: "Calibri", size: 24, color: "000000" }),
+                                new TextRun({ text: formData.vendorDetails, font: "Calibri", size: 24, color: "000000" })
+                            ]
+                        }),
+                        new Paragraph({ text: "", spacing: { after: 200 } }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "[Decorative Border Image]",
+                                    font: "Calibri",
+                                    size: 20,
+                                    color: "000000"
+                                })
+                            ],
+                            alignment: AlignmentType.CENTER
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: "نوٹ: یہ ٹرانزیکشن تاریخ اجرا سے سات دنوں تک کے لیے قابل استعمال ہے ای-سٹامپ کی تصدیق بذریعہ ویب سائٹ کیو آر کوڈ یا ایس ایم ایس سے کی جا سکتی ہے۔",
+                                    font: "Calibri",
+                                    size: 20,
+                                    bold: true,
+                                    color: "000000"
+                                })
+                            ],
+                            alignment: AlignmentType.RIGHT
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: `TYPE "eSTAMP ${formData.stampId}" SEND TO 8100`,
+                                    font: "Calibri",
+                                    size: 20,
+                                    color: "000000"
+                                })
+                            ],
+                            alignment: AlignmentType.RIGHT
+                        })
+                    ]
+                }],
+                styles: {
+                    paragraphStyles: [
+                        {
+                            id: "TitleStyle",
+                            name: "Title",
+                            basedOn: "Normal",
+                            next: "Normal",
+                            run: {
+                                font: "Verdana",
+                                size: 36,
+                                bold: true,
+                                underline: { type: "single" },
+                                color: "000000"
+                            },
+                            paragraph: {
+                                alignment: AlignmentType.CENTER,
+                                spacing: { before: 200, after: 200 }
+                            }
+                        }
+                    ]
+                }
+            });
+
+            return doc;
+        }
+    </script>
+</body>
+</html>
